@@ -1,3 +1,5 @@
+import edu.princeton.cs.algs4.Stack;
+
 public class Board {
     public char[] board;
     private int dimension;
@@ -28,12 +30,6 @@ public class Board {
         }
         return hamming;
     }           // number of blocks out of place
-    private void swap(char a,char b){
-        char temp;
-        temp = a;
-        a = b;
-        b = temp;
-    }
     public int manhattan(){
         int row = 0;
         int col = 0;
@@ -53,9 +49,27 @@ public class Board {
         }
         return true;
     }                // is this board the goal board?
-//    public Board twin(){
-//
-//    }                    // a board that is obtained by exchanging any pair of blocks
+    public Board twin(){
+        int[][] blocks = new int[dimension()][dimension()];
+        int count= 0;
+        for(int i = 0; i < dimension();i++) {
+            for (int j = 0; j < dimension(); j++) {
+                blocks[i][j] = (int) board[count++] - 65;
+            }
+        }
+        if(blocks[0][0] == 0){
+            swap(blocks,0,1,0,2);
+            return new Board(blocks);
+        }
+        if(blocks[0][1] == 0) {
+            swap(blocks,0,0,0,2);
+            return new Board(blocks);
+        }
+        else {
+            swap(blocks,0,0,0,1);
+            return new Board(blocks);
+        }
+    }                    // a board that is obtained by exchanging any pair of blocks
     public boolean equals(Object y){
         if(this == y) return true;
         if(this.getClass() != y.getClass()) return false;
@@ -66,9 +80,52 @@ public class Board {
         }
         return true;
     }        // does this board equal y?
-//    public Iterable<Board> neighbors(){
-//
-//    }     // all neighboring boards
+    public Iterable<Board> neighbors(){
+        int[][] blocks = new int[dimension()][dimension()];
+        int count = 0;
+        int row = 0, col = 0; // fix variable might not have been initialized
+        Stack<Board> iterable = new Stack<>();
+        for(int i = 0; i < dimension();i++) {
+            for (int j = 0; j < dimension(); j++) {
+                blocks[i][j] = (int) board[count++] - 65;
+                if (blocks[i][j] == 0) {
+                    row = i;
+                    col = j;
+                }
+            }
+        }
+        if (row + 1 < dimension()) {
+            swap(blocks, row, col, row + 1, col);
+            Board temp = new Board(blocks);
+            iterable.push(temp);
+            swap(blocks, row, col, row + 1, col);
+            }
+        if (row - 1 >= 0) {
+            swap(blocks, row, col, row - 1, col);
+            Board temp = new Board(blocks);
+            iterable.push(temp);
+            swap(blocks, row, col, row - 1, col);
+            }
+        if (col + 1 < dimension()) {
+            swap(blocks, row, col, row, col + 1);
+            Board temp = new Board(blocks);
+            iterable.push(temp);
+            swap(blocks, row, col, row, col + 1);
+            }
+        if (col - 1 >= 0) {
+            swap(blocks, row, col, row, col - 1);
+            Board temp = new Board(blocks);
+            iterable.push(temp);
+            swap(blocks, row, col, row, col - 1);
+            }
+        return iterable;
+    }     // all neighboring boards
+
+    private void swap(int[][] blocks,int row, int col, int row1, int col1){
+        int temp = blocks[row][col];
+        blocks[row][col] = blocks[row1][col1];
+        blocks[row1][col1] = temp;
+    }
     public String toString(){
         int count = 0;
         StringBuilder s = new StringBuilder();
@@ -83,10 +140,9 @@ public class Board {
     }               // string representation of this board (in the output format specified below)
 
     public static void main(String[] args){
-        int a[][] = {{1,2,3},{4,0,5},{7,8,6}};
+        int a[][] = {{2,3,0},{4,1,5},{7,8,6}};
         Board board = new Board(a);
         System.out.println(board);
-        System.out.println(board.isGoal());
-        System.out.println(board.hamming());
+        System.out.println(board.twin());
     } // unit tests (not graded)
 }
