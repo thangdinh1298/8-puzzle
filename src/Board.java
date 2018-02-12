@@ -23,11 +23,13 @@ public class Board {
         return dimension;
     }               // board dimension n
     public int hamming(){
+        int temp = 0;
         for(int i = 0; i < dimension*dimension - 1; i++){
             if((int) board[i] - 65 != i+1) {
-                hamming++;
+                temp++;
             }
         }
+        hamming = temp;
         return hamming;
     }           // number of blocks out of place
     public int manhattan(){
@@ -40,7 +42,8 @@ public class Board {
             col = i%dimension() - ((int) board[i] - 65 - 1)%dimension();
             temp += Math.abs(row) + Math.abs(col);
 //            System.out.println((int) board[i] - 65 + ": " + "row " + Math.abs(row) + " col " + Math.abs(col)); //for debugging
-        } manhattan = temp;
+        }
+        manhattan = temp;
         return manhattan;
     }                 // sum of Manhattan distances between blocks and goal
     public boolean isGoal(){
@@ -72,6 +75,8 @@ public class Board {
         }
     }                    // a board that is obtained by exchanging any pair of blocks
     public boolean equals(Object y){
+        if(y == null) return false;
+        if(this == null) return false;
         if(this == y) return true;
         if(this.getClass() != y.getClass()) return false;
         Board that = (Board) y;
