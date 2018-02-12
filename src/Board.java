@@ -33,13 +33,14 @@ public class Board {
     public int manhattan(){
         int row = 0;
         int col = 0;
+        int temp = 0;
         for(int i = 0; i < dimension()*dimension(); i ++){
             if((int)board[i] - 65 == 0) continue;
             row = i/dimension() - ((int) board[i] - 65 - 1)/dimension();
             col = i%dimension() - ((int) board[i] - 65 - 1)%dimension();
-            manhattan += Math.abs(row) + Math.abs(col);
+            temp += Math.abs(row) + Math.abs(col);
 //            System.out.println((int) board[i] - 65 + ": " + "row " + Math.abs(row) + " col " + Math.abs(col)); //for debugging
-        }
+        } manhattan = temp;
         return manhattan;
     }                 // sum of Manhattan distances between blocks and goal
     public boolean isGoal(){
@@ -140,9 +141,11 @@ public class Board {
     }               // string representation of this board (in the output format specified below)
 
     public static void main(String[] args){
-        int a[][] = {{2,3,0},{4,1,5},{7,8,6}};
+        int a[][] = {{0,1,3},{4,2,5},{7,8,6}};
         Board board = new Board(a);
-        System.out.println(board);
-        System.out.println(board.twin());
+        for(Board b: board.neighbors()){
+            System.out.println(b);
+            System.out.println(b.manhattan());
+        }
     } // unit tests (not graded)
 }
