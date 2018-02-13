@@ -7,6 +7,7 @@ public class Solver {
     private int moves;
     private Node lastNode;
     public Solver(Board initial)  {
+        if(initial == null) throw new IllegalArgumentException("Argument can't be null");
 
         MinPQ<Node> initialPQ = new MinPQ<>();
         MinPQ<Node> twinPQ = new MinPQ<>();
@@ -15,7 +16,7 @@ public class Solver {
         Node pseudoTwinNode = new Node(null,null);
 
         Node firstInitNode = new Node(initial, pseudoInitNode);
-        Node firstTwinNode = new Node(initial, pseudoTwinNode);
+        Node firstTwinNode = new Node(initial.twin(), pseudoTwinNode);
 
         initialPQ.insert(firstInitNode);
         twinPQ.insert(firstTwinNode);
@@ -39,7 +40,6 @@ public class Solver {
             }
             curInitNode = initialPQ.delMin();
             curTwinNode = twinPQ.delMin();
-
         }
 
         firstInitNode.prevNode = null;
@@ -53,7 +53,6 @@ public class Solver {
             isSolvable = false;
             moves = -1;
         }
-        System.out.println(this.moves());
     }         // find a solution to the initial board (using the A* algorithm)
 
 
@@ -61,16 +60,22 @@ public class Solver {
         private Board curBoard;
         private Node prevNode;
         private int movesSofar;
+        private int manhattan;
+        private int hamming;
 
         public Node(Board thatCur, Node thatPrev){
             this.curBoard = thatCur;
             this.prevNode = thatPrev;
+            if(thatCur != null){
+                this.manhattan = this.curBoard.manhattan();
+                this.hamming = this.curBoard.hamming();
+            }
         }
         private void setMoveCount(int countMoves){
             this.movesSofar = countMoves;
         }
         private int priority(){
-            return movesSofar + curBoard.manhattan();
+            return movesSofar + manhattan;
         }
 
         @Override
@@ -99,7 +104,6 @@ public class Solver {
             s.push(lastNode.prevNode.curBoard);
             lastNode = lastNode.prevNode;
         }
-        System.out.println(s.size());
         return s;
     }      // sequence of boards in a shortest solution; null if unsolvable
     public static void main(String[] args){
@@ -112,9 +116,5 @@ public class Solver {
             }
         }
         Solver solver = new Solver(new Board(blocks));
-        System.out.println(solver.isSolvable);
-        for(Board b: solver.solution()){
-            System.out.println(b);
-        }
     } // solve a slider puzzle (given below)
 }

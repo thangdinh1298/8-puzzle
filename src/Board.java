@@ -1,7 +1,7 @@
 import edu.princeton.cs.algs4.Stack;
 
 public class Board {
-    public char[] board;
+    private char[] board;
     private int dimension;
     private int hamming;
     private int manhattan;
@@ -24,7 +24,8 @@ public class Board {
     }               // board dimension n
     public int hamming(){
         int temp = 0;
-        for(int i = 0; i < dimension*dimension - 1; i++){
+        for(int i = 0; i < dimension*dimension ; i++){
+            if((int) board[i] - 65 == 0) continue;
             if((int) board[i] - 65 != i+1) {
                 temp++;
             }
@@ -41,7 +42,6 @@ public class Board {
             row = i/dimension() - ((int) board[i] - 65 - 1)/dimension();
             col = i%dimension() - ((int) board[i] - 65 - 1)%dimension();
             temp += Math.abs(row) + Math.abs(col);
-//            System.out.println((int) board[i] - 65 + ": " + "row " + Math.abs(row) + " col " + Math.abs(col)); //for debugging
         }
         manhattan = temp;
         return manhattan;
@@ -56,23 +56,31 @@ public class Board {
     public Board twin(){
         int[][] blocks = new int[dimension()][dimension()];
         int count= 0;
+        int row = 0,col = 0;
         for(int i = 0; i < dimension();i++) {
             for (int j = 0; j < dimension(); j++) {
                 blocks[i][j] = (int) board[count++] - 65;
             }
         }
-        if(blocks[0][0] == 0){
-            swap(blocks,0,1,0,2);
-            return new Board(blocks);
+        count = 0;
+        boolean flag = true;
+        for(int i = 0; i < dimension(); i++){
+            if(flag){
+                for(int j = 0; j < dimension(); j++){
+                    if(blocks[i][j] == 0) continue;
+                    else{
+                        count++;
+                        if(count >= 2) {
+                            swap(blocks,i,j,row,col);
+                            flag = false;
+                            break;
+                        }
+                        row = i; col = j;
+                    }
+                }
+            }
         }
-        if(blocks[0][1] == 0) {
-            swap(blocks,0,0,0,2);
-            return new Board(blocks);
-        }
-        else {
-            swap(blocks,0,0,0,1);
-            return new Board(blocks);
-        }
+        return new Board(blocks);
     }                    // a board that is obtained by exchanging any pair of blocks
     public boolean equals(Object y){
         if(y == null) return false;
@@ -146,11 +154,6 @@ public class Board {
     }               // string representation of this board (in the output format specified below)
 
     public static void main(String[] args){
-        int a[][] = {{0,1,3},{4,2,5},{7,8,6}};
-        Board board = new Board(a);
-        for(Board b: board.neighbors()){
-            System.out.println(b);
-            System.out.println(b.manhattan());
-        }
+//        }
     } // unit tests (not graded)
 }
